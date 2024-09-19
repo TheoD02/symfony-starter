@@ -1,0 +1,3 @@
+tools/*/vendor
+/.castor/.castor.stub.php
+.idea

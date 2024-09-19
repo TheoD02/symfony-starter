@@ -1,0 +1,221 @@
+includes:
+    - %rootDir%/../../spaze/phpstan-disallowed-calls/disallowed-dangerous-calls.neon
+    - %rootDir%/../../spaze/phpstan-disallowed-calls/disallowed-execution-calls.neon
+    - %rootDir%/../../spaze/phpstan-disallowed-calls/disallowed-insecure-calls.neon
+    - %rootDir%/../../spaze/phpstan-disallowed-calls/disallowed-loose-calls.neon
+    - %rootDir%/../../slam/phpstan-extensions/conf/not-now-rules.neon
+    - %rootDir%/../../slam/phpstan-extensions/conf/symfony-rules.neon
+    - phar://phpstan.phar/conf/bleedingEdge.neon
+
+parameters:
+    level: max
+    errorFormat: ticketswap
+    paths:
+        - %currentWorkingDirectory%/src
+        - %currentWorkingDirectory%/tests
+#    symfony:
+#        containerXmlPath: %currentWorkingDirectory%/var/cache/dev/App_KernelDevDebugContainer.xml
+    checkAlwaysTrueCheckTypeFunctionCall: true
+    checkAlwaysTrueInstanceof: true
+    checkAlwaysTrueStrictComparison: true
+    checkBenevolentUnionTypes: true
+    checkDynamicProperties: true
+    checkExplicitMixedMissingReturn: true
+    checkFunctionNameCase: true
+    checkGenericClassInNonGenericObjectType: true
+    checkImplicitMixed: true
+    checkInternalClassCaseSensitivity: true
+    checkMaybeUndefinedVariables: true
+    checkMissingCallableSignature: true
+    checkTooWideReturnTypesInProtectedAndPublicMethods: true
+    checkUninitializedProperties: true
+    inferPrivatePropertyTypeFromConstructor: true
+    polluteScopeWithAlwaysIterableForeach: false
+    polluteScopeWithLoopInitialAssignments: false
+    rememberPossiblyImpureFunctionValues: true
+    reportAnyTypeWideningInVarTag: true
+    reportMaybesInMethodSignatures: true
+    reportMaybesInPropertyPhpDocTypes: true
+    reportStaticMethodSignatures: true
+    reportUnmatchedIgnoredErrors: false
+    treatPhpDocTypesAsCertain: false
+#    doctrine: # see: https://github.com/phpstan/phpstan-doctrine?tab=readme-ov-file#configuration
+#        ormRepositoryClass: Doctrine\ORM\EntityRepository
+#        odmRepositoryClass: Doctrine\ODM\MongoDB\DocumentRepository
+    exceptions:
+        uncheckedExceptionClasses:
+            - 'Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException'
+            - 'Symfony\Component\Security\Core\Exception\AccessDeniedException'
+            - 'Doctrine\DBAL\Exception'
+#    check:
+#        missingCheckedExceptionInThrows: true
+#        tooWideThrowType: true
+    parallel:
+        jobSize: 20
+        maximumNumberOfProcesses: 32
+        minimumNumberOfJobsPerProcess: 2
+        processTimeout: 300.0
+    type_coverage:
+        return_type: 100
+        param_type: 100
+        property_type: 100
+    ignoreErrors:
+        - "#^Method .*Provider::provide\\(\\) should return Rekalogika\\\\ApiLite\\\\Paginator\\\\MappingPaginatorDecorator<.*> but returns iterable<.*>.$#"
+        -
+            message: "#^Class .*ApiPlatform\\\\Payload\\\\.*Input.*#"
+            identifier: property.uninitialized
+        - "#^Method .*Factory\\:\\:defaults\\(\\) return type has no value type specified in iterable type array\\.$#"
+        - "#^Return type \\(array\\) of method .*Factory\\:\\:defaults\\(\\) should be covariant with return type \\(.*\\) of method .*Factory.*\\:\\:defaults\\(\\)$#"
+        -
+            message: "#^Parameter .* \\$parameters .*Test\\:\\:url\\(\\) should be contravariant with parameter \\$parameters .* App\\\\Tests\\\\AbstractApiTestCase\\:\\:url\\(\\)$#"
+            identifier: method.childParameterType
+    type_perfect:
+        no_mixed: true
+        null_over_false: true
+        narrow_param: false
+        narrow_return: true
+    ergebnis:
+        final:
+            enabled: false
+        noExtends:
+            enabled: false
+        noParameterWithNullDefaultValue:
+            enabled: false
+        noIsset:
+            enabled: false
+        noConstructorParameterWithDefaultValue:
+            enabled: false
+        noParameterWithNullableTypeDeclaration:
+            enabled: false
+        finalInAbstractClass:
+            enabled: false
+        noNullableReturnTypeDeclaration:
+            enabled: false
+    todo_by:
+        nonIgnorable: false
+        referenceTime: "now"
+    shipmonkRules:
+        allowComparingOnlyComparableTypes:
+            enabled: true
+        backedEnumGenerics:
+            enabled: false
+        enforceClosureParamNativeTypehint:
+            enabled: true
+            allowMissingTypeWhenInferred: true
+        enforceEnumMatch:
+            enabled: true
+        enforceIteratorToArrayPreserveKeys:
+            enabled: true
+        enforceListReturn:
+            enabled: true
+        enforceNativeReturnTypehint:
+            enabled: true
+        enforceReadonlyPublicProperty:
+            enabled: false
+        forbidArithmeticOperationOnNonNumber:
+            enabled: true
+            allowNumericString: false
+        forbidCast:
+            enabled: true
+            blacklist: ['(array)', '(object)', '(unset)']
+        forbidCheckedExceptionInYieldingMethod:
+            enabled: true
+        # https://github.com/shipmonk-rnd/phpstan-rules?tab=readme-ov-file#forbidcustomfunctions-
+        forbidCustomFunctions:
+            enabled: true
+            list: []
+        forbidEnumInFunctionArguments:
+            enabled: true
+        forbidFetchOnMixed:
+            enabled: true
+        # https://github.com/shipmonk-rnd/phpstan-rules?tab=readme-ov-file#forbididenticalclasscomparison
+        forbidIdenticalClassComparison:
+            enabled: true
+            blacklist: ['DateTimeInterface']
+        forbidIncrementDecrementOnNonInteger:
+            enabled: true
+        forbidMatchDefaultArmForEnums:
+            enabled: true
+        forbidMethodCallOnMixed:
+            enabled: true
+        forbidNotNormalizedType:
+            enabled: true
+            checkDisjunctiveNormalForm: true
+        forbidNullInAssignOperations:
+            enabled: false
+            blacklist: ['??=']
+        # https://github.com/shipmonk-rnd/phpstan-rules?tab=readme-ov-file#forbidnullinbinaryoperations
+        forbidNullInBinaryOperations:
+            enabled: false
+            blacklist: ['===', '!==', '??']
+        forbidNullInInterpolatedString:
+            enabled: true
+        forbidPhpDocNullabilityMismatchWithNativeTypehint:
+            enabled: true
+        forbidProtectedEnumMethod:
+            enabled: true
+        forbidReturnValueInYieldingMethod:
+            enabled: true
+            reportRegardlessOfReturnType: false
+        forbidVariableTypeOverwriting:
+            enabled: true
+        forbidUnsetClassField:
+            enabled: true
+        forbidUselessNullableReturn:
+            enabled: true
+        forbidUnusedException:
+            enabled: true
+        forbidUnusedMatchResult:
+            enabled: true
+        requirePreviousExceptionPass:
+            enabled: true
+            reportEvenIfExceptionIsNotAcceptableByRethrownOne: true
+        uselessPrivatePropertyDefaultValue:
+            enabled: true
+        uselessPrivatePropertyNullability:
+            enabled: true
+    voku:
+        checkForAssignments: true
+        checkYodaConditions: false
+    banned_code:
+        nodes:
+            # enable detection of echo
+            -
+                type: Stmt_Echo
+                functions: null
+
+            # enable detection of eval
+            -
+                type: Expr_Eval
+                functions: null
+
+            # enable detection of die/exit
+            -
+                type: Expr_Exit
+                functions: null
+
+            # enable detection of a set of functions
+            -
+                type: Expr_FuncCall
+                functions:
+                    - dd
+                    - debug_backtrace
+                    - dump
+                    - exec
+                    - passthru
+                    - phpinfo
+                    - print_r
+                    - proc_open
+                    - shell_exec
+                    - system
+                    - var_dump
+
+            # enable detection of print statements
+            -
+                type: Expr_Print
+                functions: null
+
+            # enable detection of shell execution by backticks
+            -
+                type: Expr_ShellExec
+                functions: null
