@@ -108,6 +108,7 @@ function setup(): void
             'Or change the port in the compose.override.yaml file and Dockerfile',
             '* Only change ports that is make conflict with other services',
             'In compose.override.yaml, on line 8 and 9, change the port to the one you want',
+            'If you change the port of React Hot Module, change in vite.config.js the port to the same port',
             'If you change the port of PHPStan, change in Dockerfile the PHPSTAN_PRO_WEB_PORT and the EXPOSE to the same port',
             'One line 44 of compose.override.yaml, change the port of the database to the one you want',
         ]);
