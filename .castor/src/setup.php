@@ -96,7 +96,7 @@ function setup(): void
     $cleanSymfony = io()->confirm('Do you want a clean symfony installation?', false);
     if ($cleanSymfony) {
         foreach (finder()->in(app_context()->workingDirectory)->directories()->depth(0) as $directory) {
-            fs()->remove($directory);
+            fs()->remove($directory->getRealPath());
         }
         foreach (finder()->in(app_context()->workingDirectory)->ignoreDotFiles(false)->files()->depth(0) as $file) {
             fs()->remove($file->getRealPath());
