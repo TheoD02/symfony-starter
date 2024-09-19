@@ -69,7 +69,7 @@ function setup(): void
             $dockerImage = io()->ask('What is the Docker image?', $dockerImage ?? $appName);
         } while (io()->confirm(
             "Is this correct? {$registryDomain}/{$registryNamespace}/{$dockerImage}",
-            false
+            false,
         ) === false);
 
         $replace = [
@@ -99,7 +99,7 @@ function setup(): void
             fs()->remove($directory);
         }
         foreach (finder()->in(app_context()->workingDirectory)->ignoreDotFiles(false)->files()->depth(0) as $file) {
-            fs()->remove($file);
+            fs()->remove($file->getRealPath());
         }
         symfony_installation();
     }
@@ -159,20 +159,20 @@ function symfony_installation(): void
         ];
         $mapping = [
             substr($response['symfony_versions']['stable'], 0, 3) => substr(
-                $response['symfony_versions']['stable'],
-                0,
-                3,
-            ) . '.*',
+                    $response['symfony_versions']['stable'],
+                    0,
+                    3,
+                ) . '.*',
             substr($response['symfony_versions']['lts'], 0, 3) => substr(
-                $response['symfony_versions']['lts'],
-                0,
-                3,
-            ) . '.*',
+                    $response['symfony_versions']['lts'],
+                    0,
+                    3,
+                ) . '.*',
             substr($response['symfony_versions']['next'], 0, 3) => substr(
-                $response['symfony_versions']['next'],
-                0,
-                3,
-            ) . '.*-dev',
+                    $response['symfony_versions']['next'],
+                    0,
+                    3,
+                ) . '.*-dev',
         ];
 
         $diff = array_diff($response['maintained_versions'], array_keys($versions));
