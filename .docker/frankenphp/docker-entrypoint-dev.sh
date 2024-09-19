@@ -36,6 +36,7 @@ if [ "$1" = 'frankenphp' ] || [ "$1" = 'php' ] || [ "$1" = 'bin/console' ]; then
     fi
   fi
 
+  mkdir -p /home/www-data/.config/caddy
 	setfacl -R -m u:www-data:rwX -m u:"$(whoami)":rwX var /data /config /app /tools /home/www-data/.config/caddy
 	setfacl -dR -m u:www-data:rwX -m u:"$(whoami)":rwX var /data /config /app /tools /home/www-data/.config/caddy
 fi
