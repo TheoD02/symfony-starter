@@ -60,37 +60,58 @@ function setup(): void
     }
     io()->success('Done!');
 
-    $isDeployWithDockerImage = io()->confirm('Do you want to deploy with a Docker image?');
-    if ($isDeployWithDockerImage) {
-        io()->newLine();
-        do {
-            $registryDomain = io()->ask('What is the registry domain?', $registryDomain ?? 'docker.io');
-            $registryNamespace = io()->ask('What is the registry namespace?', $registryNamespace ?? 'theod');
-            $dockerImage = io()->ask('What is the Docker image?', $dockerImage ?? $appName);
-        } while (io()->confirm(
-            "Is this correct? {$registryDomain}/{$registryNamespace}/{$dockerImage}",
-            false,
-        ) === false);
+    $isInfraAlreadySetup = false;
+    if (fs()->exists(root_context()->workingDirectory . '/.castor/src/infra.php')) {
+        $isInfraAlreadySetup = docker()->data['registry'] !== '<docker-registry-placeholder>/<docker-namespace-placeholder>';
+    }
+    if ($isInfraAlreadySetup === false) {
+        $isDeployWithDockerImage = io()->confirm('Do you want to deploy with a Docker image?');
+        if ($isDeployWithDockerImage) {
+            io()->newLine();
+            do {
+                $registryDomain = io()->ask('What is the registry domain?', $registryDomain ?? 'docker.io');
+                $registryNamespace = io()->ask('What is the registry namespace?', $registryNamespace ?? 'theod');
+                $dockerImage = io()->ask('What is the Docker image?', $dockerImage ?? $appName);
+            } while (io()->confirm(
+                "Is this correct? {$registryDomain}/{$registryNamespace}/{$dockerImage}",
+                false,
+            ) === false);
 
-        $replace = [
-            '<docker-registry-placeholder>',
-            '<docker-namespace-placeholder>',
-            '<docker-image-placeholder>',
-        ];
-        $replaceWith = [$registryDomain, $registryNamespace, $dockerImage];
+            $replace = [
+                '<docker-registry-placeholder>',
+                '<docker-namespace-placeholder>',
+                '<docker-image-placeholder>',
+            ];
+            $replaceWith = [$registryDomain, $registryNamespace, $dockerImage];
 
-        io()->note('Replacing placeholders in infra.php');
-        $contents = file_get_contents(root_context()->workingDirectory . '/.castor/src/infra.php');
-        foreach ($replace as $index => $value) {
-            $contents = str_replace($value, $replaceWith[$index], $contents);
+            io()->note('Replacing placeholders in infra.php');
+            $contents = file_get_contents(root_context()->workingDirectory . '/.castor/src/infra.php');
+            foreach ($replace as $index => $value) {
+                $contents = str_replace($value, $replaceWith[$index], $contents);
+            }
+            file_put_contents(root_context()->workingDirectory . '/.castor/src/infra.php', $contents);
+            io()->success('Done!');
+        } else {
+            fs()->remove(root_context()->workingDirectory . '/.castor/src/infra.php');
         }
-        file_put_contents(root_context()->workingDirectory . '/.castor/src/infra.php', $contents);
-        io()->success('Done!');
-    } else {
-        fs()->remove(root_context()->workingDirectory . '/.castor/src/infra.php');
     }
 
-    start();
+    try {
+
+        start();
+    } catch (\Throwable $e) {
+        io()->error([
+            'Error while starting the project',
+            $e->getMessage(),
+            '',
+            'If error concerns port binding, please check if the port is not already used by another process.',
+            'Or change the port in the compose.override.yaml file and Dockerfile',
+            '* Only change ports that is make conflict with other services',
+            'In compose.override.yaml, on line 8 and 9, change the port to the one you want',
+            'If you change the port of PHPStan, change in Dockerfile the PHPSTAN_PRO_WEB_PORT and the EXPOSE to the same port',
+            'One line 44 of compose.override.yaml, change the port of the database to the one you want',
+        ]);
+    }
     io()->newLine();
 
     $cleanSymfony = io()->confirm('Do you want a clean symfony installation?', false);
