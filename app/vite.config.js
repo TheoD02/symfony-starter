@@ -47,12 +47,12 @@ export default defineConfig({
     //     usePolling: true,
     // },
     host: true,
-    port: 3151,
+    port: <react-hot-module-port-placeholder>,
     hmr: {
       protocol: "ws",
       host: "localhost",
-      port: 3151,
-      clientPort: 3151,
+      port: <react-hot-module-port-placeholder>,
+      clientPort: <react-hot-module-port-placeholder>,
     },
   },
 });

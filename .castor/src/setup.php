@@ -18,6 +18,37 @@ use function TheoD\MusicAutoTagger\app_context;
 use function TheoD\MusicAutoTagger\root_context;
 use function TheoD\MusicAutoTagger\Runner\composer;
 
+function ask_port_if_already_in_use(string $appName, int $port, bool $innerCall = false): int
+{
+    if ($innerCall === false) {
+        io()->write("Checking if port {$port} is already in use for {$appName}...");
+    } else {
+        io()->write(" {$port}");
+    }
+    $isAvailable = false;
+
+    do {
+        $fp = @fsockopen('127.0.0.1', $port, timeout: 1);
+
+        if ($fp === false) {
+            $isAvailable = true;
+        } else {
+            fclose($fp);
+            $isAvailable = false;
+        }
+
+        if ($isAvailable === false) {
+            $port++;
+            io()->write("<error> KO </error>");
+            return ask_port_if_already_in_use($appName, $port, true);
+        } else {
+            io()->writeln("<info> OK </info>");
+        }
+    } while ($isAvailable === false);
+
+    return $port;
+}
+
 #[AsTask]
 function setup(): void
 {
@@ -47,7 +78,12 @@ function setup(): void
         // docker compose
         root_context()->workingDirectory . '/compose.yaml',
         root_context()->workingDirectory . '/compose.override.yaml',
+        root_context()->workingDirectory . '/Dockerfile',
     ];
+
+    $reactHotModulePort = ask_port_if_already_in_use('React Hot Module', 3000);
+    $phpStanPort = ask_port_if_already_in_use('PHPStan', 11111);
+    $databasePort = ask_port_if_already_in_use('Database', 6435);
 
     io()->section('Replacing placeholders in project files');
     foreach ($files as $file) {
@@ -55,7 +91,18 @@ function setup(): void
             continue;
         }
         $contents = file_get_contents($file);
-        $contents = str_replace('<app-name-placeholder>', $appName, $contents);
+        $contents = str_replace(
+            [
+                '<app-name-placeholder>',
+                '<react-hot-module-port-placeholder>',
+                '<phpstan-port-placeholder>',
+                '<database-port-placeholder>'
+            ],
+            [$appName, $reactHotModulePort, $phpStanPort, $databasePort],
+            $contents
+        );
+
+
         file_put_contents($file, $contents);
     }
     io()->success('Done!');

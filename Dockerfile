@@ -85,8 +85,8 @@ CMD [ "frankenphp", "run", "--config", "/etc/caddy/Caddyfile" ]
 # Dev FrankenPHP image
 FROM frankenphp_base AS frankenphp_dev
 
-ENV PHPSTAN_PRO_WEB_PORT=11112
-EXPOSE 11112
+ENV PHPSTAN_PRO_WEB_PORT=<phpstan-port-placeholder>
+EXPOSE <phpstan-port-placeholder>
 
 COPY --link --chmod=755 .docker/frankenphp/docker-entrypoint-dev.sh /usr/local/bin/docker-entrypoint
 

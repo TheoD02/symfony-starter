@@ -1,12 +1,13 @@
 # Development environment override
 services:
   php:
+    container_name: <app-name-placeholder>-php
     build:
       context: .
       target: frankenphp_dev
     ports:
-      - "3151:3151" # React Hot Module
-      - "11112:11112" # PHPStan
+      - "<react-hot-module-port-placeholder>:<react-hot-module-port-placeholder>" # React Hot Module
+      - "<phpstan-port-placeholder>:<phpstan-port-placeholder>" # PHPStan
     volumes:
       - ./app:/app
       - ./tools:/tools
@@ -40,8 +41,9 @@ services:
 
   ###> doctrine/doctrine-bundle ###
   database:
+    container_name: <app-name-placeholder>-database
     ports:
-      - "5433:5432"
+      - "<database-port-placeholder>:5432"
 ###< doctrine/doctrine-bundle ###
 
 networks:
