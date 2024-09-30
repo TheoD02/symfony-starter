@@ -21,7 +21,7 @@ class ContainerDefinitionBag
     {
         return new ContainerDefinition(
             composeName: 'php',
-            name: '<app-name-placeholder>-php-1',
+            name: '<app-name-placeholder>-php',
             workingDirectory: '/app',
             user: 'www-data',
         );
@@ -31,7 +31,7 @@ class ContainerDefinitionBag
     {
         return new ContainerDefinition(
             composeName: 'php',
-            name: '<app-name-placeholder>-php-1',
+            name: '<app-name-placeholder>-php',
             workingDirectory: '/app',
             user: 'www-data',
         );
